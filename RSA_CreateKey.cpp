@@ -6,12 +6,12 @@ class KeyGenerator
 {
 private:
 	int* SimpleNumber;
-	int Length, p, q;
+	int Length = 0, p = 0, q = 0, n = 0, Euler = 0, e = 0;
 	void SieveOfEratosthenes()
 	{
-		srand(time(NULL));//
-		Length = 3 + rand() % 3;// Создаем случайное число от 3 до 5
-		Length = pow(10, Length);// Запишем в переменную Length 10 в степени случайного числа полученого выше
+		srand(clock());//
+		Length = 3 + rand() % 3;// Создаем случайное число от 3 до 5!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		Length = 1000*(1+rand() % 2);// Запишем в переменную Length 10 в степени случайного числа полученого выше
 		SimpleNumber = new int[Length];// Создание динамического массива с размером Length
 		for(int i = 0; i < Length; i++) // Заполняем динамический массив числами от 1 до Length включительно
 		{
@@ -50,21 +50,49 @@ private:
 				if(SimpleNumber[j]%SimpleNumber[i] == 0) SimpleNumber[j] = -1;// Вычеркиваем т.к число не простое
 			}
 		}
+
+		for(int i = 0; i < Length; i++) std::cout  << SimpleNumber[i] << std::endl;;
 	}
 
-	/*void SortSimpleNumber
+	void SortSimpleNumber()
 	{
+		int CountSimpleNumber = 0;
 
-	}*/
+		for(int i = 0; i < Length; i++)
+		{
+			if(SimpleNumber[i] == -1)
+			{
+				for(int j = i+1; j < Length; j++)
+				{
+					if(SimpleNumber[j] != -1)
+					{
+						SimpleNumber[i] = SimpleNumber[j];
+						SimpleNumber[j] = -1;
+						CountSimpleNumber++;
+						break;
+					}
+				}
+			}
+		}
+		Length = CountSimpleNumber;
+	}
+
+	int EulerFunction(int p, int q)
+	{
+		return (p-1)*(q-1);
+	}
+
 public:	
 	KeyGenerator()
 	{
 		SieveOfEratosthenes();
+		SortSimpleNumber();
 	}
 
 	KeyGenerator(int MaxNumber) // Override конструктора
 	{
 		SieveOfEratosthenes(MaxNumber);
+		SortSimpleNumber();
 	}
 
 	~KeyGenerator() //Деструктор
@@ -72,21 +100,38 @@ public:
 		delete[] SimpleNumber; // Удалим указатель на динамический массив
 	}
 
-	/*void CreatePublicKey()
+	void CreatePublicKey()
 	{
 		srand(clock());
 		p = SimpleNumber[rand() % Length];
+		srand(clock());
 		q = SimpleNumber[rand() % Length];
+		n = p*q;
 
-		std::cout << p << std::endl;
-		std::cout << q << std::endl;
-	}*/
+		std::cout << "p: " << p << std::endl;
+		std::cout << "q: " << q << std::endl;
+		std::cout << "n: " << n << std::endl;
+
+		Euler = EulerFunction(p, q);
+		std::cout << "Euler: " << Euler << std::endl;
+		delete[] SimpleNumber;
+		SieveOfEratosthenes(Euler-1);
+		SortSimpleNumber();
+		srand(clock());
+		e = SimpleNumber[rand() % Length];
+
+
+
+
+		std::cout << "e: " << e << std::endl;
+
+	}
 
 };
 
 int main()
 {
 	KeyGenerator key; //Создание динамического объекта класса чтобы освободить нужную область памяти прямо во время вополнения программы
-	//key.CreatePublicKey();
+	key.CreatePublicKey();
 	return 1;
 }
